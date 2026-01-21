@@ -425,9 +425,11 @@
                         proposalButtons.style.display = 'none';
                         celebration.style.display = 'block';
                         
-                        // Guardar la fecha de inicio de la relación
-                        const startDate = new Date();
-                        localStorage.setItem('relationshipStartDate', startDate.toISOString());
+                        // Guardar la fecha de inicio SOLO si no existe
+                        if (!localStorage.getItem('relationshipStartDate')) {
+                            const startDate = new Date();
+                            localStorage.setItem('relationshipStartDate', startDate.toISOString());
+                        }
                         
                         // Iniciar el contador
                         startCounter();
@@ -517,25 +519,56 @@
 
             // Contador de días
             function startCounter() {
-                const startDate = new Date(localStorage.getItem('relationshipStartDate') || new Date());
+                // OPCIÓN 1: Usar fecha guardada en localStorage
+                let startDate = localStorage.getItem('relationshipStartDate');
+                
+                // OPCIÓN 2: Si quieres una fecha fija, descomenta y cambia esta línea:
+                // startDate = '2026-01-21T00:00:00.000Z'; // Cambia esta fecha a la que quieras
+                
+                if (!startDate) {
+                    // Si no hay fecha guardada, usa la fecha actual
+                    startDate = new Date().toISOString();
+                    localStorage.setItem('relationshipStartDate', startDate);
+                }
+                
+                const relationshipStart = new Date(startDate);
                 
                 function updateCounter() {
                     const now = new Date();
-                    const diff = now - startDate;
+                    const diff = now - relationshipStart;
                     
                     const days = Math.floor(diff / (1000 * 60 * 60 * 24));
                     const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
                     const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
                     const seconds = Math.floor((diff % (1000 * 60)) / 1000);
                     
-                    document.getElementById('days').textContent = days;
-                    document.getElementById('hours').textContent = hours;
-                    document.getElementById('minutes').textContent = minutes;
-                    document.getElementById('seconds').textContent = seconds;
+                    const daysEl = document.getElementById('days');
+                    const hoursEl = document.getElementById('hours');
+                    const minutesEl = document.getElementById('minutes');
+                    const secondsEl = document.getElementById('seconds');
+                    
+                    if (daysEl) daysEl.textContent = days;
+                    if (hoursEl) hoursEl.textContent = hours;
+                    if (minutesEl) minutesEl.textContent = minutes;
+                    if (secondsEl) secondsEl.textContent = seconds;
                 }
                 
                 updateCounter();
                 setInterval(updateCounter, 1000);
+            }
+            
+            // Si ya hay una fecha guardada, mostrar el contador automáticamente
+            if (localStorage.getItem('relationshipStartDate')) {
+                const celebration = document.getElementById('celebration');
+                const proposalButtons = document.getElementById('proposal-buttons');
+                
+                if (celebration && proposalButtons) {
+                    setTimeout(() => {
+                        proposalButtons.style.display = 'none';
+                        celebration.style.display = 'block';
+                        startCounter();
+                    }, 2000);
+                }
             }
 
             // Mezcla de corazones y pétalos cayendo continuamente

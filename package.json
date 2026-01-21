@@ -1,0 +1,15 @@
+{
+  "name": "love-story-bea",
+  "version": "1.0.0",
+  "description": "Romantic love story website for Bea",
+  "main": "index.html",
+  "scripts": {
+    "start": "serve -s . -l 3000"
+  },
+  "keywords": ["love", "romantic", "interactive"],
+  "author": "Claudio",
+  "license": "MIT",
+  "dependencies": {
+    "serve": "^14.2.0"
+  }
+}
